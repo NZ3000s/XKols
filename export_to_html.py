@@ -6,6 +6,7 @@ Reads recommendations.csv and generates an HTML page with embedded tweets and ex
 import csv
 import html
 import os
+import re
 from datetime import datetime
 
 CSV_PATH = "recommendations.csv"
@@ -14,6 +15,18 @@ OUT_HTML = "recommendations.html"
 
 def escape(s: str) -> str:
     return html.escape(s) if s else ""
+
+
+def linkify(text: str) -> str:
+    """Make URLs in already-escaped text clickable."""
+    if not text:
+        return ""
+    # Match http(s) URLs, avoid double-linking
+    return re.sub(
+        r"(https?://[^\s<]+)",
+        r'<a href="\1" target="_blank" rel="noopener" class="tweet-link">\1</a>',
+        text,
+    )
 
 
 def format_num(n: str | int) -> str:
@@ -33,11 +46,33 @@ def format_joined(created_at: str) -> str:
     if not created_at or not created_at.strip():
         return ""
     try:
-        # API returns "2013-12-14T00:00:00.000Z"
         dt = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
         return dt.strftime("Joined %b %Y")
     except Exception:
         return ""
+
+
+def format_tweet_date(created_at: str) -> str:
+    """Format tweet created_at (ISO) to 'Mon DD, YYYY' or empty."""
+    if not created_at or not created_at.strip():
+        return ""
+    try:
+        dt = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+        return dt.strftime("%b %d, %Y")
+    except Exception:
+        return ""
+
+
+def tweet_id_from_url(url: str) -> str:
+    """Extract tweet ID from x.com or twitter.com status URL."""
+    if not url:
+        return ""
+    url = url.strip()
+    # .../status/1234567890 or .../status/1234567890?s=20
+    if "/status/" in url:
+        part = url.split("/status/")[-1]
+        return part.split("?")[0].split("/")[0].strip()
+    return ""
 
 
 def format_ratio(followers, following) -> str:
@@ -92,6 +127,7 @@ def main():
         username = r.get("username") or ""
         name = escape(r.get("name") or "")
         profile_url = r.get("profile_url") or f"https://x.com/{username}"
+        profile_image_url = (r.get("profile_image_url") or "").strip()
         followers = format_num(r.get("followers_count") or 0)
         following_raw = r.get("following_count") or 0
         try:
@@ -114,49 +150,49 @@ def main():
         total_retweets = r.get("total_retweets") or "0"
         total_replies = r.get("total_replies") or "0"
 
-        # Extra info block (all in English)
-        extra_parts = []
+        # One compact header line: badge, handle, followers, ER, likes
+        meta_parts = [f'<span class="meta-followers">{followers} fol.</span>', f'<span class="meta-er">ER {er_pct}</span>', f'<span class="meta-eng">♥ {total_likes} RT {total_retweets} ↩ {total_replies}</span>']
         if joined:
-            extra_parts.append(f'<span title="Account creation date">{joined}</span>')
-        if listed:
-            extra_parts.append(f'<span title="List count (quality signal)">Listed {listed}</span>')
-        if ratio and ratio != "—":
-            extra_parts.append(f'<span title="Followers / Following">F/Following {ratio}</span>')
-        extra_parts.append(f'<span title="Matching tweets in search">Matching tweets {tweets_found}</span>')
-        extra_parts.append(f'<span title="Likes / RTs / Replies on those">♥ {total_likes} · RT {total_retweets} · ↩ {total_replies}</span>')
-        extra_html = " · ".join(extra_parts)
+            meta_parts.append(f'<span class="meta-joined">{joined}</span>')
+        meta_line = " · ".join(meta_parts)
 
         card = f'''
         <article class="card card-{rec_class}" data-recommendation="{escape(rec)}">
-          <div class="card-header">
+          <div class="card-top">
             <span class="badge badge-{rec_class}">{escape(rec)}</span>
             <a href="{escape(profile_url)}" target="_blank" rel="noopener" class="profile-link">@{escape(username)}</a>
-            <span class="name">{name}</span>
+            <span class="card-meta">{meta_line}</span>
           </div>
-          <div class="card-metrics">
-            <span title="Followers">Followers {followers}</span>
-            <span title="Total engagements">Engagement {engagement}</span>
-            <span title="Engagement rate">ER {er_pct}</span>
-          </div>
-          <div class="card-extra">{extra_html}</div>
-          <p class="reason">{reason}</p>
           <div class="tweet-embeds">
 '''
         for i in range(1, 4):
-            url = r.get(f"tweet_url_{i}") if has_tweet_urls else ""
-            if url and url.strip():
-                # Official X embed: blockquote + link; widgets.js will render the tweet
-                card += f'''
-            <div class="tweet-embed-wrap">
-              <blockquote class="twitter-tweet" data-dnt="true"><a href="{escape(url)}"></a></blockquote>
-            </div>
-'''
-            else:
-                text = (r.get(f"sample_tweet_{i}") or "").strip()
-                if text:
-                    card += f'''
-            <div class="tweet-fallback">
-              <p class="tweet-text">{escape(text[:500])}{"…" if len(text) > 500 else ""}</p>
+            url = r.get(f"tweet_url_{i}") or ""
+            text = (r.get(f"sample_tweet_{i}") or "").strip()
+            tweet_date_raw = (r.get(f"tweet_date_{i}") or "").strip()
+            tweet_date_str = format_tweet_date(tweet_date_raw) if tweet_date_raw else ""
+            if not text and not url:
+                continue
+            tweet_url = url.strip() or profile_url
+            if "x.com" in tweet_url and "twitter.com" not in tweet_url:
+                tweet_url = tweet_url.replace("https://x.com/", "https://twitter.com/", 1)
+            safe_text = escape(text[:600]) + ("…" if len(text) > 600 else "")
+            safe_text = linkify(safe_text)
+            avatar_html = f'<img src="{escape(profile_image_url)}" alt="" class="tweet-avatar-img" loading="lazy" referrerpolicy="no-referrer">' if profile_image_url else '<div class="tweet-avatar" aria-hidden="true"></div>'
+            date_html = f'<span class="tweet-date">{escape(tweet_date_str)}</span>' if tweet_date_str else ""
+            card += f'''
+            <div class="tweet-card">
+              <div class="tweet-card-header">
+                {avatar_html}
+                <span class="tweet-handle">@{escape(username)}</span>
+                {date_html}
+              </div>
+              <div class="tweet-card-body">{safe_text or "—"}</div>
+              <div class="tweet-card-actions">
+                <span class="tweet-stat">♥ {total_likes}</span>
+                <span class="tweet-stat">RT {total_retweets}</span>
+                <span class="tweet-stat">↩ {total_replies}</span>
+                <a href="{escape(tweet_url)}" target="_blank" rel="noopener" class="tweet-view-link">View on X</a>
+              </div>
             </div>
 '''
         card += '''
@@ -221,33 +257,34 @@ def main():
     .filters button.active {{ color: var(--text); border-color: var(--accent-strong); background: var(--surface2); }}
     .filters button.active.consider {{ border-color: var(--accent-consider); }}
     .filters button.active.skip {{ border-color: var(--accent-skip); }}
-    .grid {{ display: grid; gap: 1rem; }}
+    .grid {{ display: grid; gap: 0.75rem; }}
     .card {{
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 1.25rem;
-      transition: opacity 0.2s, transform 0.2s;
+      padding: 0.75rem 1rem;
+      transition: opacity 0.2s;
     }}
     .card:hover {{ border-color: #3f3f46; }}
     .card.card-strong-hire {{ border-left: 4px solid var(--accent-strong); }}
     .card.card-consider {{ border-left: 4px solid var(--accent-consider); }}
     .card.card-skip {{ border-left: 4px solid var(--accent-skip); opacity: 0.75; }}
     .card.hidden {{ display: none; }}
-    .card-header {{
+    .card-top {{
       display: flex;
       align-items: center;
       gap: 0.5rem;
       flex-wrap: wrap;
       margin-bottom: 0.5rem;
+      font-size: 0.8rem;
     }}
     .badge {{
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 0.2rem 0.5rem;
-      border-radius: 6px;
+      letter-spacing: 0.04em;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
     }}
     .badge-strong-hire {{ background: rgba(34, 197, 94, 0.2); color: var(--accent-strong); }}
     .badge-consider {{ background: rgba(234, 179, 8, 0.2); color: var(--accent-consider); }}
@@ -259,41 +296,73 @@ def main():
       font-family: 'JetBrains Mono', monospace;
     }}
     .profile-link:hover {{ color: var(--link-hover); text-decoration: underline; }}
-    .name {{ color: var(--text2); font-size: 0.9rem; }}
-    .card-metrics {{
+    .card-meta {{ color: var(--text2); }}
+    .tweet-embeds {{ margin-top: 0.5rem; }}
+    .tweet-card {{
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+    }}
+    .tweet-card:last-child {{ margin-bottom: 0; }}
+    .tweet-card-header {{
       display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }}
+    .tweet-avatar, .tweet-avatar-img {{
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      object-fit: cover;
+    }}
+    .tweet-avatar {{
+      background: linear-gradient(135deg, var(--surface2) 0%, var(--border) 100%);
+    }}
+    .tweet-handle {{
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.95rem;
+    }}
+    .tweet-date {{
+      color: var(--text2);
+      font-size: 0.85rem;
+      margin-left: 0.25rem;
+    }}
+    .tweet-date::before {{
+      content: "· ";
+      margin-right: 0.15rem;
+    }}
+    .tweet-card-body {{
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin-bottom: 0.5rem;
+    }}
+    .tweet-card-body .tweet-link {{
+      color: var(--link);
+      text-decoration: none;
+    }}
+    .tweet-card-body .tweet-link:hover {{ text-decoration: underline; }}
+    .tweet-card-actions {{
+      display: flex;
+      align-items: center;
       gap: 1rem;
-      margin-bottom: 0.35rem;
       font-size: 0.85rem;
       color: var(--text2);
     }}
-    .card-extra {{
-      font-size: 0.8rem;
-      color: var(--text2);
-      margin-bottom: 0.5rem;
-      opacity: 0.9;
+    .tweet-stat {{ margin-right: 0.25rem; }}
+    .tweet-view-link {{
+      color: var(--link);
+      text-decoration: none;
+      margin-left: auto;
     }}
-    .reason {{ margin: 0.5rem 0 0.75rem; font-size: 0.9rem; color: var(--text2); }}
-    .tweet-embeds {{ margin-top: 0.75rem; }}
-    .tweet-embed-wrap {{
-      margin-bottom: 1rem;
-      min-height: 120px;
-    }}
-    .tweet-embed-wrap .twitter-tweet {{ margin: 0 auto; }}
-    .tweet-fallback {{
-      margin-bottom: 0.75rem;
-      padding: 0.6rem;
-      background: var(--bg);
-      border-radius: 8px;
-      border: 1px solid var(--border);
-    }}
-    .tweet-fallback .tweet-text {{
-      margin: 0;
-      font-size: 0.9rem;
-      color: var(--text2);
-      white-space: pre-wrap;
-      word-break: break-word;
-    }}
+    .tweet-view-link:hover {{ text-decoration: underline; }}
     .count {{ color: var(--text2); font-size: 0.9rem; margin-bottom: 1rem; }}
   </style>
 </head>
@@ -312,7 +381,6 @@ def main():
       {"".join(cards_html)}
     </div>
   </div>
-  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
   <script>
     document.querySelectorAll('.filter-btn').forEach(btn => {{
       btn.addEventListener('click', () => {{

@@ -43,7 +43,7 @@ def search_tweets(
     *,
     max_results: int = 100,
     max_pages: int = 10,
-    user_fields: str = "public_metrics,username,name,verified,created_at",
+    user_fields: str = "public_metrics,username,name,verified,created_at,profile_image_url",
 ) -> tuple[list[dict], dict[str, dict]]:
     """Пошук останніх твітів (API v2 recent search). Повертає твіти та словник user_id -> user."""
     headers = {"Authorization": f"Bearer {bearer}"}

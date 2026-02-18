@@ -47,12 +47,14 @@ def build_influencers_with_tweets(tweets: list, users_by_id: dict) -> list[dict]
                 "tweet_count": metrics.get("tweet_count") or 0,
                 "listed_count": metrics.get("listed_count") or 0,
                 "created_at": u.get("created_at") or "",
+                "profile_image_url": u.get("profile_image_url") or "",
                 "tweets_found": 0,
                 "total_likes": 0,
                 "total_retweets": 0,
                 "total_replies": 0,
                 "sample_tweets": [],
                 "sample_tweet_ids": [],
+                "sample_tweet_dates": [],
             }
         rec = by_author[aid]
         rec["tweets_found"] += 1
@@ -62,10 +64,13 @@ def build_influencers_with_tweets(tweets: list, users_by_id: dict) -> list[dict]
         rec["total_replies"] += pm.get("reply_count") or 0
         text = (t.get("text") or "").strip()
         tweet_id = t.get("id")
+        tweet_created = t.get("created_at") or ""
         if text and len(rec["sample_tweets"]) < 5:
             rec["sample_tweets"].append(text[:500])
             if tweet_id:
                 rec["sample_tweet_ids"].append(tweet_id)
+            if tweet_created:
+                rec["sample_tweet_dates"].append(tweet_created)
 
     return list(by_author.values())
 
@@ -188,6 +193,7 @@ def main():
         "username",
         "name",
         "profile_url",
+        "profile_image_url",
         "followers_count",
         "following_count",
         "listed_count",
@@ -202,6 +208,9 @@ def main():
         "sample_tweet_1",
         "sample_tweet_2",
         "sample_tweet_3",
+        "tweet_date_1",
+        "tweet_date_2",
+        "tweet_date_3",
         "tweet_url_1",
         "tweet_url_2",
         "tweet_url_3",
@@ -217,6 +226,7 @@ def main():
                 "username": uname,
                 "name": row["name"],
                 "profile_url": f"{base}/{uname}",
+                "profile_image_url": row.get("profile_image_url") or "",
                 "followers_count": row["followers_count"],
                 "following_count": row["following_count"],
                 "listed_count": row.get("listed_count") or "",
@@ -229,9 +239,11 @@ def main():
                 "engagement_rate": f"{row['engagement_rate']:.4f}",
                 "recommendation_reason": row["recommendation_reason"],
             }
+            dates = row.get("sample_tweet_dates") or []
             for i in range(1, 4):
                 samples = row.get("sample_tweets") or []
                 r[f"sample_tweet_{i}"] = samples[i - 1] if len(samples) >= i else ""
+                r[f"tweet_date_{i}"] = dates[i - 1] if len(dates) >= i else ""
                 r[f"tweet_url_{i}"] = f"{base}/{uname}/status/{ids[i-1]}" if len(ids) >= i else ""
             w.writerow(r)
 
