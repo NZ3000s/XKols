@@ -104,10 +104,12 @@ def main():
             score += 50 / min(cost_per_1k_views, 50)  # до 50 балів за дешевий CPM
         if er_views > 0:
             score += min(er_views * 2, 50)  # до 50 за ER
+        profile_image_url = (author.get("profilePicture") or author.get("profile_image_url") or "").strip()
         rows.append({
             "username": author.get("userName") or "",
             "name": author.get("name") or "",
             "tweet_url": t.get("url") or "",
+            "profile_image_url": profile_image_url,
             "followers": followers,
             "views": views,
             "likes": likes,
@@ -127,7 +129,7 @@ def main():
     import csv
     out_csv = "repost_effectiveness.csv"
     fieldnames = [
-        "username", "name", "tweet_url", "followers", "views", "likes", "retweets", "replies",
+        "username", "name", "tweet_url", "profile_image_url", "followers", "views", "likes", "retweets", "replies",
         "quotes", "bookmarks", "engagement", "engagement_rate_pct", "reach_pct",
         "cost_per_1k_views", "cost_per_engagement", "effectiveness_score",
     ]
@@ -143,9 +145,12 @@ def main():
     for i, r in enumerate(rows, 1):
         cpm = r["cost_per_1k_views"]
         cpe = r["cost_per_engagement"]
+        avatar_url = r.get("profile_image_url") or ""
+        avatar_html = f'<img src="{avatar_url}" alt="" class="influencer-avatar" loading="lazy" referrerpolicy="no-referrer">' if avatar_url else ''
         trs.append(f"""
         <tr>
           <td>{i}</td>
+          <td class="avatar-cell">{avatar_html}</td>
           <td><a href="{r['tweet_url']}" target="_blank" rel="noopener">@{r['username']}</a></td>
           <td>{format_num(r['followers'])}</td>
           <td>{format_num(r['views'])}</td>
@@ -201,6 +206,8 @@ def main():
     tr:hover {{ background: rgba(255,255,255,0.03); }}
     a {{ color: var(--link); text-decoration: none; }}
     a:hover {{ text-decoration: underline; }}
+    .avatar-cell {{ width: 40px; padding-right: 0; }}
+    .influencer-avatar {{ width: 36px; height: 36px; border-radius: 50%; object-fit: cover; display: block; }}
     .metrics {{ display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; font-size: 0.9rem; color: var(--text2); }}
   </style>
 </head>
@@ -216,6 +223,7 @@ def main():
       <thead>
         <tr>
           <th>#</th>
+          <th></th>
           <th>Influencer</th>
           <th>Followers</th>
           <th>Views</th>
@@ -250,9 +258,12 @@ def main():
         cpm_str = f"${cpm:.2f}" if cpm is not None else "—"
         cpe_str = f"${cpe:.2f}" if cpe is not None else "—"
         score_str = f"{score:.1f}" if score is not None else "—"
+        avatar_url = r.get("profile_image_url") or ""
+        avatar_html = f'<img src="{avatar_url}" alt="" class="influencer-avatar" loading="lazy" referrerpolicy="no-referrer">' if avatar_url else ''
         trs_interactive.append(f"""
         <tr data-views="{r['views']}" data-engagement="{r['engagement']}" data-er="{r['engagement_rate_pct']}" data-reach="{r['reach_pct']}">
           <td>{i + 1}</td>
+          <td class="avatar-cell">{avatar_html}</td>
           <td><a href="{r['tweet_url']}" target="_blank" rel="noopener">@{r['username']}</a></td>
           <td>{format_num(r['followers'])}</td>
           <td>{format_num(r['views'])}</td>
@@ -294,6 +305,8 @@ def main():
     tr:hover {{ background: rgba(255,255,255,0.03); }}
     a {{ color: var(--link); text-decoration: none; }}
     a:hover {{ text-decoration: underline; }}
+    .avatar-cell {{ width: 40px; padding-right: 0; }}
+    .influencer-avatar {{ width: 36px; height: 36px; border-radius: 50%; object-fit: cover; display: block; }}
     .cost-cell.total-mode input {{ pointer-events: none; opacity: 0.8; }}
     .formulas {{ margin-bottom: 1.5rem; }}
     .formulas h2 {{ font-size: 1rem; margin-bottom: 0.5rem; color: var(--text2); }}
@@ -333,6 +346,7 @@ def main():
       <thead>
         <tr>
           <th>#</th>
+          <th></th>
           <th>Influencer</th>
           <th>Followers</th>
           <th>Views</th>

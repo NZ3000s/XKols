@@ -1,20 +1,20 @@
-username,name,tweet_url,followers,views,likes,retweets,replies,quotes,bookmarks,engagement,engagement_rate_pct,reach_pct,cost_per_1k_views,cost_per_engagement,effectiveness_score
-Redlion35,RED⃫,https://x.com/Redlion35/status/2026279188651549173,83523,6915,242,133,36,0,0,411,5.94,8.3,18.08,0.3,14.7
-CRYPTOKRALI3,CRYPTOKRALI©️,https://x.com/CRYPTOKRALI3/status/2026018373209932135,76968,2824,146,1,31,0,2,178,6.3,3.7,44.26,0.7,13.7
-DeFi_Tycoon,DeFi Tycoon,https://x.com/DeFi_Tycoon/status/2026005423925432819,76745,25629,210,39,38,0,0,287,1.12,33.4,4.88,0.44,12.5
-kingfxyo,fxyo,https://x.com/kingfxyo/status/2026325878486057091,31835,1892,58,9,42,0,0,109,5.76,5.9,66.07,1.15,12.5
-haloETH,halo,https://x.com/haloETH/status/2026276326504800526,59869,10352,230,47,40,0,0,317,3.06,17.3,12.07,0.39,10.3
-worldoffisher,FISHER ✨,https://x.com/worldoffisher/status/2026023156356465057,146548,22039,31,1,32,0,1,64,0.29,15.0,5.67,1.95,9.4
-raintures,Rain,https://x.com/raintures/status/2026008894653239385,80478,18702,120,8,56,0,8,184,0.98,23.2,6.68,0.68,9.4
-Ellaweb_3,EllaWeb3,https://x.com/Ellaweb_3/status/2026279037375496334,84463,12655,194,1,71,0,0,266,2.1,15.0,9.88,0.47,9.3
-moha_web3,MOHA🎖️,https://x.com/moha_web3/status/2026279186856378493,146304,10923,125,2,137,0,0,264,2.42,7.5,11.44,0.47,9.2
-AL_theDeFiMaxi,𝑨𝑳 𝒕𝒉𝒆 𝑫𝒆𝑭𝒊 𝑴𝒂𝒙𝒊 ☭,https://x.com/AL_theDeFiMaxi/status/2026020481678155826,63816,14093,196,8,38,0,0,242,1.72,22.1,8.87,0.52,9.1
-Eliteonchain,Elite🏝,https://x.com/Eliteonchain/status/2026312171022336050,23736,17438,69,12,54,0,2,135,0.77,73.5,7.17,0.93,8.5
-Diamondweb_3,Diamond,https://x.com/Diamondweb_3/status/2026300978580861140,90837,7407,142,12,51,0,0,205,2.77,8.2,16.88,0.61,8.5
-MookieNFT,Mookie,https://x.com/MookieNFT/status/2026242303606579567,151002,10935,176,4,40,0,4,220,2.01,7.2,11.43,0.57,8.4
-Helgaweb_3,HelgaWeb3,https://x.com/Helgaweb_3/status/2026019623175348485,131849,5014,110,8,39,0,1,157,3.13,3.8,24.93,0.8,8.3
-Mekarly,MΞK,https://x.com/Mekarly/status/2026020638352191738,97043,9129,117,1,51,0,0,169,1.85,9.4,13.69,0.74,7.4
-NickAlphas,Nick 🏆,https://x.com/NickAlphas/status/2026025208415453415,128733,7224,97,6,45,0,4,148,2.05,5.6,17.3,0.84,7.0
-LucasWeb3_,Lucas 🧪,https://x.com/LucasWeb3_/status/2026030394429055052,94241,9206,67,4,49,0,5,120,1.3,9.8,13.58,1.04,6.3
-_thespacebyte,spacebyte ⛓,https://x.com/_thespacebyte/status/2026201518702014668,24401,4694,56,2,46,0,2,104,2.22,19.2,26.63,1.2,6.3
-WorldOfMercek,Mercek,https://x.com/WorldOfMercek/status/2026002379800236096,116830,4503,63,0,38,0,3,101,2.24,3.9,27.76,1.24,6.3
+username,name,tweet_url,profile_image_url,followers,views,likes,retweets,replies,quotes,bookmarks,engagement,engagement_rate_pct,reach_pct,cost_per_1k_views,cost_per_engagement,effectiveness_score
+Redlion35,RED⃫,https://x.com/Redlion35/status/2026279188651549173,https://pbs.twimg.com/profile_images/2003808003829506048/9lX5aA7V_normal.jpg,83524,6916,242,133,36,0,0,411,5.94,8.3,18.07,0.3,14.7
+CRYPTOKRALI3,CRYPTOKRALI©️,https://x.com/CRYPTOKRALI3/status/2026018373209932135,https://pbs.twimg.com/profile_images/1811393626498285568/vce0tW6K_normal.jpg,76967,2824,146,1,31,0,2,178,6.3,3.7,44.26,0.7,13.7
+DeFi_Tycoon,DeFi Tycoon,https://x.com/DeFi_Tycoon/status/2026005423925432819,https://pbs.twimg.com/profile_images/1518830028028624896/bepHaiTv_normal.jpg,76745,25631,211,39,38,0,0,288,1.12,33.4,4.88,0.43,12.5
+kingfxyo,fxyo,https://x.com/kingfxyo/status/2026325878486057091,https://pbs.twimg.com/profile_images/1991305038623391744/CbFi4fnq_normal.jpg,31835,1892,58,9,42,0,0,109,5.76,5.9,66.07,1.15,12.5
+haloETH,halo,https://x.com/haloETH/status/2026276326504800526,https://pbs.twimg.com/profile_images/1989234977834430464/xj-sx33V_normal.jpg,59871,10353,230,47,40,0,0,317,3.06,17.3,12.07,0.39,10.3
+worldoffisher,FISHER ✨,https://x.com/worldoffisher/status/2026023156356465057,https://pbs.twimg.com/profile_images/1751922623464787968/8xa4JKTE_normal.jpg,146549,22039,31,1,32,0,1,64,0.29,15.0,5.67,1.95,9.4
+raintures,Rain,https://x.com/raintures/status/2026008894653239385,https://pbs.twimg.com/profile_images/1889071944571527168/uNsNm76T_normal.jpg,80478,18702,120,8,56,0,8,184,0.98,23.2,6.68,0.68,9.4
+Ellaweb_3,EllaWeb3,https://x.com/Ellaweb_3/status/2026279037375496334,https://pbs.twimg.com/profile_images/2025334963134980096/kkhKbgRn_normal.jpg,84463,12655,194,1,71,0,0,266,2.1,15.0,9.88,0.47,9.3
+moha_web3,MOHA🎖️,https://x.com/moha_web3/status/2026279186856378493,https://pbs.twimg.com/profile_images/1795149543178166272/jYMmuBzg_normal.jpg,146305,10924,125,2,137,0,0,264,2.42,7.5,11.44,0.47,9.2
+AL_theDeFiMaxi,𝑨𝑳 𝒕𝒉𝒆 𝑫𝒆𝑭𝒊 𝑴𝒂𝒙𝒊 ☭,https://x.com/AL_theDeFiMaxi/status/2026020481678155826,https://pbs.twimg.com/profile_images/1940402077051568129/N-gSK0oQ_normal.jpg,63816,14093,196,8,38,0,0,242,1.72,22.1,8.87,0.52,9.1
+Eliteonchain,Elite🏝,https://x.com/Eliteonchain/status/2026312171022336050,https://pbs.twimg.com/profile_images/1809503186664697856/tc79qC4a_normal.jpg,23736,17439,69,12,54,0,2,135,0.77,73.5,7.17,0.93,8.5
+Diamondweb_3,Diamond,https://x.com/Diamondweb_3/status/2026300978580861140,https://pbs.twimg.com/profile_images/1871110216789512192/FYtaMdAs_normal.jpg,90838,7411,142,12,51,0,0,205,2.77,8.2,16.87,0.61,8.5
+MookieNFT,Mookie,https://x.com/MookieNFT/status/2026242303606579567,https://pbs.twimg.com/profile_images/2007021710831153152/Qo194XWA_normal.jpg,151002,10937,176,4,40,0,4,220,2.01,7.2,11.43,0.57,8.4
+Helgaweb_3,HelgaWeb3,https://x.com/Helgaweb_3/status/2026019623175348485,https://pbs.twimg.com/profile_images/1990060016657731584/pc-zCy6G_normal.jpg,131849,5014,110,8,39,0,1,157,3.13,3.8,24.93,0.8,8.3
+Mekarly,MΞK,https://x.com/Mekarly/status/2026020638352191738,https://pbs.twimg.com/profile_images/2007193860108156928/yL2mNduX_normal.jpg,97042,9129,117,1,51,0,0,169,1.85,9.4,13.69,0.74,7.4
+NickAlphas,Nick 🏆,https://x.com/NickAlphas/status/2026025208415453415,https://pbs.twimg.com/profile_images/1639167393359437826/KaqfDvRt_normal.jpg,128733,7224,97,6,45,0,4,148,2.05,5.6,17.3,0.84,7.0
+LucasWeb3_,Lucas 🧪,https://x.com/LucasWeb3_/status/2026030394429055052,https://pbs.twimg.com/profile_images/1676900475755536384/2Jz_p__j_normal.png,94241,9206,67,4,49,0,5,120,1.3,9.8,13.58,1.04,6.3
+_thespacebyte,spacebyte ⛓,https://x.com/_thespacebyte/status/2026201518702014668,https://pbs.twimg.com/profile_images/1797938939296137216/RF12C9dl_normal.jpg,24401,4694,56,2,46,0,2,104,2.22,19.2,26.63,1.2,6.3
+WorldOfMercek,Mercek,https://x.com/WorldOfMercek/status/2026002379800236096,https://pbs.twimg.com/profile_images/1961494563891122176/oKVV4UtU_normal.jpg,116830,4503,63,0,38,0,3,101,2.24,3.9,27.76,1.24,6.3
