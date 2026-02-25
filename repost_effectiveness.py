@@ -324,6 +324,11 @@ def main():
     .formula-table td:first-child {{ font-weight: 500; padding-right: 1rem; }}
     .formula-table code {{ background: var(--bg); padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.85em; }}
     .formula-note {{ color: var(--text2); font-size: 0.8em; font-weight: normal; }}
+    .campaign-total {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem 1.5rem; margin-bottom: 1rem; padding: 1rem; background: var(--surface); border-radius: 8px; font-size: 0.9rem; }}
+    .campaign-total h2 {{ grid-column: 1 / -1; font-size: 0.95rem; margin: 0 0 0.25rem 0; color: var(--text2); }}
+    .campaign-total .stat {{ display: flex; flex-direction: column; gap: 0.1rem; }}
+    .campaign-total .stat-label {{ color: var(--text2); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.03em; }}
+    .campaign-total .stat-value {{ font-weight: 600; }}
   </style>
 </head>
 <body>
@@ -352,6 +357,16 @@ def main():
         <input type="number" id="total-budget" min="0" step="1" value="{COST_PER_POST * len(rows)}" placeholder="Total">
       </span>
     </div>
+    <section class="campaign-total" id="campaign-total">
+      <h2>Campaign total</h2>
+      <div class="stat"><span class="stat-label">Influencers</span><span class="stat-value" id="ct-n">—</span></div>
+      <div class="stat"><span class="stat-label">Total cost</span><span class="stat-value" id="ct-cost">—</span></div>
+      <div class="stat"><span class="stat-label">Total views</span><span class="stat-value" id="ct-views">—</span></div>
+      <div class="stat"><span class="stat-label">Total engagement</span><span class="stat-value" id="ct-engagement">—</span></div>
+      <div class="stat"><span class="stat-label">Overall ER %</span><span class="stat-value" id="ct-er">—</span></div>
+      <div class="stat"><span class="stat-label">$ / 1K views</span><span class="stat-value" id="ct-cpm">—</span></div>
+      <div class="stat"><span class="stat-label">$ / engagement</span><span class="stat-value" id="ct-cpe">—</span></div>
+    </section>
     <table>
       <thead>
         <tr>
@@ -388,6 +403,36 @@ def main():
     const modePer = document.getElementById('mode-per');
     if (!tbody || !totalInput) return;
     const costInputs = tbody.querySelectorAll('.cost-input');
+    const ctN = document.getElementById('ct-n');
+    const ctCost = document.getElementById('ct-cost');
+    const ctViews = document.getElementById('ct-views');
+    const ctEngagement = document.getElementById('ct-engagement');
+    const ctEr = document.getElementById('ct-er');
+    const ctCpm = document.getElementById('ct-cpm');
+    const ctCpe = document.getElementById('ct-cpe');
+
+    function formatNum(n) {{ return n >= 1e6 ? (n/1e6).toFixed(1) + 'M' : n >= 1e3 ? (n/1e3).toFixed(1) + 'K' : String(n); }}
+
+    function updateCampaignTotal() {{
+      let totalCost = 0, totalViews = 0, totalEng = 0;
+      tbody.querySelectorAll('tr').forEach(tr => {{
+        const inp = tr.querySelector('.cost-input');
+        totalCost += +(inp && inp.value) || 0;
+        totalViews += +tr.dataset.views || 0;
+        totalEng += +tr.dataset.engagement || 0;
+      }});
+      const n = tbody.querySelectorAll('tr').length;
+      const erPct = totalViews > 0 ? (totalEng / totalViews * 100).toFixed(2) : '—';
+      const cpm = totalViews > 0 && totalCost > 0 ? (totalCost / (totalViews / 1000)).toFixed(2) : '—';
+      const cpe = totalEng > 0 && totalCost > 0 ? (totalCost / totalEng).toFixed(2) : '—';
+      if (ctN) ctN.textContent = n;
+      if (ctCost) ctCost.textContent = totalCost > 0 ? '$' + totalCost.toFixed(0) : '—';
+      if (ctViews) ctViews.textContent = totalViews ? formatNum(totalViews) : '—';
+      if (ctEngagement) ctEngagement.textContent = totalEng ? formatNum(totalEng) : '—';
+      if (ctEr) ctEr.textContent = erPct + (erPct !== '—' ? '%' : '');
+      if (ctCpm) ctCpm.textContent = cpm !== '—' ? '$' + cpm : '—';
+      if (ctCpe) ctCpe.textContent = cpe !== '—' ? '$' + cpe : '—';
+    }}
 
     function recalcRow(tr, cost) {{
       const views = +tr.dataset.views;
@@ -412,6 +457,7 @@ def main():
         inp.value = Math.round(each * 100) / 100;
         recalcRow(tr, each);
       }});
+      updateCampaignTotal();
     }}
 
     function setupPerMode() {{
@@ -421,6 +467,7 @@ def main():
         inp.style.pointerEvents = '';
         recalcRow(tr, inp.value);
       }});
+      updateCampaignTotal();
     }}
 
     modeTotal.addEventListener('change', function() {{
@@ -438,10 +485,10 @@ def main():
     totalInput.addEventListener('input', applyTotal);
     totalInput.addEventListener('change', applyTotal);
     costInputs.forEach(inp => {{
-      inp.addEventListener('input', function() {{ recalcRow(this.closest('tr'), this.value); }});
-      inp.addEventListener('change', function() {{ recalcRow(this.closest('tr'), this.value); }});
+      inp.addEventListener('input', function() {{ recalcRow(this.closest('tr'), this.value); updateCampaignTotal(); }});
+      inp.addEventListener('change', function() {{ recalcRow(this.closest('tr'), this.value); updateCampaignTotal(); }});
     }});
-    if (modePer.checked) setupPerMode();
+    if (modePer.checked) {{ setupPerMode(); updateCampaignTotal(); }}
     else {{ totalWrap.style.display = 'flex'; tbody.classList.add('total-mode'); tbody.querySelectorAll('.cost-cell').forEach(c => c.classList.add('total-mode')); applyTotal(); }}
     }});
   </script>
