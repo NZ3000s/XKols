@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Оцінка ефективності інфлюенсерів за репостами ($120 за пост).
+Оцінка ефективності інфлюенсерів за репостами ($125 за пост).
 Завантажує метрики твітів через TwitterAPI.io, рахує показники, виводить CSV + HTML.
 """
 
@@ -15,7 +15,7 @@ load_dotenv()
 
 API_KEY = os.environ.get("TWITTERAPI_IO_API_KEY") or os.environ.get("TWITTERAPI_IO_KEY")
 BASE = "https://api.twitterapi.io"
-COST_PER_POST = 120  # USD
+COST_PER_POST = 125  # USD
 
 # Репости для оцінки (URL або твіти з однаковою вартістю)
 TWEET_URLS = [
@@ -159,8 +159,8 @@ def main():
           <tr><td>Engagement</td><td><code>Likes + Retweets + Replies</code></td></tr>
           <tr><td>Engagement rate %</td><td><code>(Engagement ÷ Views) × 100</code></td></tr>
           <tr><td>Reach %</td><td><code>(Views ÷ Followers) × 100</code></td></tr>
-          <tr><td>$ / 1K views</td><td><code>120 ÷ (Views ÷ 1000)</code></td></tr>
-          <tr><td>$ / engagement</td><td><code>120 ÷ Engagement</code></td></tr>
+          <tr><td>$ / 1K views</td><td><code>{COST_PER_POST} ÷ (Views ÷ 1000)</code></td></tr>
+          <tr><td>$ / engagement</td><td><code>{COST_PER_POST} ÷ Engagement</code></td></tr>
           <tr><td>Effectiveness score</td><td><code>50 ÷ min(Cost per 1K views, 50) + min(Engagement rate % × 2, 50)</code> <span class="formula-note">(lower cost & higher ER = higher score)</span></td></tr>
         </tbody>
       </table>
@@ -171,7 +171,7 @@ def main():
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Repost effectiveness · $120/post</title>
+  <title>Repost effectiveness · ${COST_PER_POST}/post</title>
   <style>
     :root {{ --bg:#0d0d0f; --surface:#16161a; --text:#e4e4e7; --text2:#a1a1aa; --link:#3b82f6; --border:#27272a; }}
     body {{ margin:0; padding:1.5rem; background:var(--bg); color:var(--text); font-family: system-ui, sans-serif; }}
@@ -196,10 +196,10 @@ def main():
 <body>
   <div class="container">
     <h1>Repost effectiveness</h1>
-    <p class="subtitle">$120 per post · who to hire next (by views, engagement, cost efficiency)</p>
+    <p class="subtitle">${COST_PER_POST} per post · who to hire next (by views, engagement, cost efficiency)</p>
     {formulas_html}
     <div class="metrics">
-      <span>Cost per post: <strong>$120</strong></span>
+      <span>Cost per post: <strong>${COST_PER_POST}</strong></span>
     </div>
     <table>
       <thead>
