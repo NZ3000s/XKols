@@ -33,6 +33,24 @@ python3 analyze_influencers.py
 
 Критерії: Strong hire = висока активність аудиторії (ER та мінімум взаємодій); Skip = мертва стрічка або боти (following >> followers, нуль лайків).
 
+### Історичні твіти (окрема сторінка) — TwitterAPI.io, тільки Euphoria_fi
+
+Офіційний X API дає лише **останні 7 днів** (і пошук може вимагати платного тарифу). Для історії — **окрема сторінка** лише по **Euphoria_fi** через [TwitterAPI.io](https://twitterapi.io/):
+
+1. Додай у `.env`: `TWITTERAPI_IO_API_KEY=твій_ключ`.
+2. Запусти пошук за періодом (тільки Euphoria_fi / euphoria.fi):
+   ```bash
+   python3 fetch_historical_twitterapi_io.py --since 2025-01-01 --until 2025-02-19
+   ```
+   Результат пишеться в **euphoria_historical.csv** (не в recommendations.csv).
+3. Згенеруй окрему HTML-сторінку:
+   ```bash
+   python3 export_to_html.py euphoria_historical.csv
+   ```
+   Відкрий **euphoria_historical.html** — там заголовок «Euphoria.fi · Historical» і твіти за обраний період.
+
+Головна сторінка **recommendations.html** залишається від основного потоку (X API, 7 днів, Euphoria + Polymarket). Історична сторінка — тільки для наочного тесту TwitterAPI.io по Euphoria_fi.
+
 ### Як поділитись recommendations.html (посилання для браузера)
 
 Щоб сторінка відкривалась по посиланню як звичайний сайт (а не як сирцевий код):

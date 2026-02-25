@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 """
-Reads recommendations.csv and generates an HTML page with embedded tweets and extra influencer info.
+Reads a recommendations CSV and generates an HTML page (tweet cards, avatars, dates).
+
+Default: recommendations.csv -> recommendations.html
+Optional:  python3 export_to_html.py euphoria_historical.csv  -> euphoria_historical.html
 """
 
 import csv
 import html
 import os
 import re
+import sys
 from datetime import datetime
 
 CSV_PATH = "recommendations.csv"
@@ -96,8 +100,20 @@ def format_ratio(followers, following) -> str:
 
 def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    csv_path = os.path.join(script_dir, CSV_PATH)
-    out_path = os.path.join(script_dir, OUT_HTML)
+    if len(sys.argv) > 1:
+        input_csv = sys.argv[1]
+        csv_path = os.path.join(script_dir, input_csv)
+        out_path = os.path.join(script_dir, os.path.splitext(input_csv)[0] + ".html")
+    else:
+        input_csv = CSV_PATH
+        csv_path = os.path.join(script_dir, CSV_PATH)
+        out_path = os.path.join(script_dir, OUT_HTML)
+    if "euphoria_historical" in os.path.basename(csv_path):
+        page_title = "Euphoria.fi · Historical"
+        page_subtitle = "TwitterAPI.io · tweets beyond 7 days (date range in CLI)"
+    else:
+        page_title = "Influencer recommendations"
+        page_subtitle = "Euphoria.fi & Polymarket 5 min · embedded tweets & extra metrics to decide"
 
     rows = []
     with open(csv_path, "r", encoding="utf-8") as f:
@@ -206,7 +222,7 @@ def main():
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Influencer recommendations · Euphoria / Polymarket 5 min</title>
+  <title>{page_title}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -368,8 +384,8 @@ def main():
 </head>
 <body>
   <div class="container">
-    <h1>Influencer recommendations</h1>
-    <p class="subtitle">Euphoria.fi & Polymarket 5 min · embedded tweets & extra metrics to decide</p>
+    <h1>{page_title}</h1>
+    <p class="subtitle">{page_subtitle}</p>
     <div class="filters">
       <button type="button" class="filter-btn active" data-filter="all">All</button>
       <button type="button" class="filter-btn" data-filter="Strong hire">Strong hire</button>
@@ -401,7 +417,7 @@ def main():
 """
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(html_content)
-    print(f"Done: {OUT_HTML}")
+    print(f"Done: {os.path.basename(out_path)}")
     print(f"Open in browser: file://{out_path}")
 
 
