@@ -244,6 +244,12 @@ def main():
     # Interactive HTML: total budget or per-influencer cost, recalc on input
     trs_interactive = []
     for i, r in enumerate(rows):
+        cpm = r["cost_per_1k_views"]
+        cpe = r["cost_per_engagement"]
+        score = r["effectiveness_score"]
+        cpm_str = f"${cpm:.2f}" if cpm is not None else "—"
+        cpe_str = f"${cpe:.2f}" if cpe is not None else "—"
+        score_str = f"{score:.1f}" if score is not None else "—"
         trs_interactive.append(f"""
         <tr data-views="{r['views']}" data-engagement="{r['engagement']}" data-er="{r['engagement_rate_pct']}" data-reach="{r['reach_pct']}">
           <td>{i + 1}</td>
@@ -257,9 +263,9 @@ def main():
           <td>{r['engagement_rate_pct']}%</td>
           <td>{r['reach_pct']}%</td>
           <td class="cost-cell"><input type="number" min="0" step="1" value="{COST_PER_POST}" class="cost-input" data-row="{i}"></td>
-          <td class="cpm-cell">—</td>
-          <td class="cpe-cell">—</td>
-          <td class="score-cell"><strong>—</strong></td>
+          <td class="cpm-cell">{cpm_str}</td>
+          <td class="cpe-cell">{cpe_str}</td>
+          <td class="score-cell"><strong>{score_str}</strong></td>
         </tr>""")
     table_body_interactive = "\n".join(trs_interactive)
     out_html_interactive = "repost_effectiveness_interactive.html"
@@ -348,6 +354,7 @@ def main():
     </table>
   </div>
   <script>
+    document.addEventListener('DOMContentLoaded', function() {{
     const N = {len(rows)};
     const defaultCost = {COST_PER_POST};
     const totalInput = document.getElementById('total-budget');
@@ -355,6 +362,7 @@ def main():
     const tbody = document.getElementById('tbody');
     const modeTotal = document.getElementById('mode-total');
     const modePer = document.getElementById('mode-per');
+    if (!tbody || !totalInput) return;
     const costInputs = tbody.querySelectorAll('.cost-input');
 
     function recalcRow(tr, cost) {{
@@ -411,6 +419,7 @@ def main():
     }});
     if (modePer.checked) setupPerMode();
     else {{ totalWrap.style.display = 'flex'; tbody.classList.add('total-mode'); tbody.querySelectorAll('.cost-cell').forEach(c => c.classList.add('total-mode')); applyTotal(); }}
+    }});
   </script>
 </body>
 </html>"""
