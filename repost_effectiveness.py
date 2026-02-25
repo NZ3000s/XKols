@@ -7,6 +7,7 @@
 import os
 import re
 from decimal import Decimal
+from urllib.parse import quote
 
 import requests
 from dotenv import load_dotenv
@@ -57,6 +58,13 @@ def fetch_tweets_by_ids(api_key: str, tweet_ids: list[str]) -> list[dict]:
     r.raise_for_status()
     data = r.json()
     return data.get("tweets") or []
+
+
+def avatar_img_url(raw_url: str) -> str:
+    """Proxied URL so avatars load on GitHub Pages (Twitter often blocks hotlinking)."""
+    if not (raw_url or "").strip():
+        return ""
+    return f"https://images.weserv.nl/?url={quote(raw_url, safe='')}"
 
 
 def format_num(n) -> str:
@@ -146,7 +154,8 @@ def main():
         cpm = r["cost_per_1k_views"]
         cpe = r["cost_per_engagement"]
         avatar_url = r.get("profile_image_url") or ""
-        avatar_html = f'<img src="{avatar_url}" alt="" class="influencer-avatar" loading="lazy" referrerpolicy="no-referrer">' if avatar_url else ''
+        avatar_src = avatar_img_url(avatar_url) if avatar_url else ""
+        avatar_html = f'<img src="{avatar_src}" alt="" class="influencer-avatar" loading="lazy" referrerpolicy="no-referrer">' if avatar_src else ''
         trs.append(f"""
         <tr>
           <td>{i}</td>
@@ -259,7 +268,8 @@ def main():
         cpe_str = f"${cpe:.2f}" if cpe is not None else "—"
         score_str = f"{score:.1f}" if score is not None else "—"
         avatar_url = r.get("profile_image_url") or ""
-        avatar_html = f'<img src="{avatar_url}" alt="" class="influencer-avatar" loading="lazy" referrerpolicy="no-referrer">' if avatar_url else ''
+        avatar_src = avatar_img_url(avatar_url) if avatar_url else ""
+        avatar_html = f'<img src="{avatar_src}" alt="" class="influencer-avatar" loading="lazy" referrerpolicy="no-referrer">' if avatar_src else ''
         trs_interactive.append(f"""
         <tr data-views="{r['views']}" data-engagement="{r['engagement']}" data-er="{r['engagement_rate_pct']}" data-reach="{r['reach_pct']}">
           <td>{i + 1}</td>
