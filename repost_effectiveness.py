@@ -150,7 +150,7 @@ def main():
           <td><strong>{r['effectiveness_score']}</strong></td>
         </tr>""")
     table_body = "\n".join(trs)
-    formulas_html = """
+    formulas_html = f"""
     <section class="formulas">
       <h2>Formulas</h2>
       <table class="formula-table">
