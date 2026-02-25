@@ -171,6 +171,7 @@ def main():
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Repost effectiveness · ${COST_PER_POST}/post</title>
   <style>
     :root {{ --bg:#0d0d0f; --surface:#16161a; --text:#e4e4e7; --text2:#a1a1aa; --link:#3b82f6; --border:#27272a; }}
